@@ -17,6 +17,5 @@ router.post(
     createPost
 );
 
-router.delete("/:id", deletePost);
-
+router.delete("/:id", authMiddleware, deletePost);
 module.exports = router;

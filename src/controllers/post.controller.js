@@ -61,13 +61,21 @@ async function deletePost(req, res) {
 
         const { id } = req.params;
 
-        const deletedPost = await postModel.findByIdAndDelete(id);
+        const post = await postModel.findById(id);
 
-        if (!deletedPost) {
+        if (!post) {
             return res.status(404).json({
                 message: "Post not found",
             });
         }
+
+        if (post.user.toString() !== req.user.id) {
+            return res.status(403).json({
+                message: "You can delete only your own posts",
+            });
+        }
+
+        await postModel.findByIdAndDelete(id);
 
         res.status(200).json({
             message: "Post deleted successfully",
