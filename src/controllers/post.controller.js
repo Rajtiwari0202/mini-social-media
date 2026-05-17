@@ -90,8 +90,56 @@ async function deletePost(req, res) {
         });
     }
 }
+async function toggleLike(req, res) {
+
+    try {
+
+        const { id } = req.params;
+
+        const post = await postModel.findById(id);
+
+        if (!post) {
+            return res.status(404).json({
+                message: "Post not found",
+            });
+        }
+
+        const userId = req.user.id;
+
+        const alreadyLiked = post.likes.includes(userId);
+
+        if (alreadyLiked) {
+
+            post.likes = post.likes.filter(
+                (like) => like.toString() !== userId
+            );
+
+        } else {
+
+            post.likes.push(userId);
+        }
+
+        await post.save();
+
+        res.status(200).json({
+            message: alreadyLiked
+                ? "Post unliked"
+                : "Post liked",
+            likesCount: post.likes.length,
+        });
+
+    } catch (error) {
+
+        console.log(error);
+
+        res.status(500).json({
+            message: "Internal Server Error",
+        });
+    }
+}
 module.exports = {
     createPost,
     getAllPosts,
     deletePost,
+    toggleLike,
 };
