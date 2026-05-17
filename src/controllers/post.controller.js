@@ -2,7 +2,9 @@ const postModel = require("../models/post.model");
 const uploadFile = require("../services/storage.service");
 
 async function createPost(req, res) {
+
     try {
+
         const file = req.file;
         const { caption } = req.body;
 
@@ -12,27 +14,39 @@ async function createPost(req, res) {
             });
         }
 
+        if (!caption || caption.trim() === "") {
+            return res.status(400).json({
+                message: "Caption is required",
+            });
+        }
+
         const uploadedImage = await uploadFile(file);
 
         const post = await postModel.create({
-        image: uploadedImage.url,
-        caption,
-        user: req.user.id,
+            image: uploadedImage.url,
+            caption: caption.trim(),
+            user: req.user.id,
         });
 
+        const populatedPost = await postModel
+            .findById(post._id)
+            .populate("user", "username email");
+
         res.status(201).json({
-            message: "Post created",
-            post,
+            message: "Post created successfully",
+            post: populatedPost,
         });
 
     } catch (error) {
-        console.log(error);
+
+        console.error(error);
 
         res.status(500).json({
-            message: "Server Error",
+            message: "Internal Server Error",
         });
     }
 }
+
 async function getAllPosts(req, res) {
 
     try {
@@ -40,21 +54,30 @@ async function getAllPosts(req, res) {
         const posts = await postModel
             .find()
             .populate("user", "username email")
+            .populate({
+                path: "comments",
+                populate: {
+                    path: "user",
+                    select: "username email",
+                },
+            })
             .sort({ createdAt: -1 });
 
         res.status(200).json({
+            message: "Posts fetched successfully",
             posts,
         });
 
     } catch (error) {
 
-        console.log(error);
+        console.error(error);
 
         res.status(500).json({
             message: "Internal Server Error",
         });
     }
 }
+
 async function deletePost(req, res) {
 
     try {
@@ -83,13 +106,14 @@ async function deletePost(req, res) {
 
     } catch (error) {
 
-        console.log(error);
+        console.error(error);
 
         res.status(500).json({
             message: "Internal Server Error",
         });
     }
 }
+
 async function toggleLike(req, res) {
 
     try {
@@ -106,7 +130,9 @@ async function toggleLike(req, res) {
 
         const userId = req.user.id;
 
-        const alreadyLiked = post.likes.includes(userId);
+        const alreadyLiked = post.likes.some(
+            (like) => like.toString() === userId
+        );
 
         if (alreadyLiked) {
 
@@ -130,13 +156,14 @@ async function toggleLike(req, res) {
 
     } catch (error) {
 
-        console.log(error);
+        console.error(error);
 
         res.status(500).json({
             message: "Internal Server Error",
         });
     }
 }
+
 module.exports = {
     createPost,
     getAllPosts,

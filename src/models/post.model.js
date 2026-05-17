@@ -5,6 +5,7 @@ const postSchema = new mongoose.Schema(
         image: {
             type: String,
             required: true,
+            trim: true,
         },
 
         caption: {
@@ -19,10 +20,18 @@ const postSchema = new mongoose.Schema(
             ref: "User",
             required: true,
         },
+
         likes: [
             {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User",
+            },
+        ],
+
+        comments: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Comment",
             },
         ],
     },
@@ -30,6 +39,9 @@ const postSchema = new mongoose.Schema(
         timestamps: true,
     }
 );
+
+postSchema.index({ user: 1 });
+postSchema.index({ createdAt: -1 });
 
 const postModel = mongoose.model("Post", postSchema);
 

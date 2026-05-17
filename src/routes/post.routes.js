@@ -1,8 +1,10 @@
 const express = require("express");
+
 const router = express.Router();
 
 const upload = require("../middlewares/upload.middleware");
 const authMiddleware = require("../middlewares/auth.middleware");
+
 const {
     createPost,
     getAllPosts,
@@ -10,16 +12,21 @@ const {
     toggleLike,
 } = require("../controllers/post.controller");
 
+// Get all posts
 router.get("/", getAllPosts);
 
+// Create a post
 router.post(
-    "/create",
+    "/",
     authMiddleware,
     upload.single("image"),
     createPost
 );
 
+// Like / Unlike a post
 router.post("/:id/like", authMiddleware, toggleLike);
 
+// Delete a post
 router.delete("/:id", authMiddleware, deletePost);
+
 module.exports = router;
