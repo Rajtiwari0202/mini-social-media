@@ -16,3 +16,5 @@ router.post(
 );
 
 router.delete("/:id", deletePost);
+
+module.exports = router;
