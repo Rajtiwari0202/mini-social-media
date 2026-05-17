@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const upload = require("../middlewares/upload.middleware");
+const authMiddleware = require("../middlewares/auth.middleware");
 const {
     createPost,
     getAllPosts,
@@ -11,6 +12,7 @@ router.get("/", getAllPosts);
 
 router.post(
     "/create",
+    authMiddleware,
     upload.single("image"),
     createPost
 );

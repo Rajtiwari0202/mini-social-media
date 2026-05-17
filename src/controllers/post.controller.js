@@ -15,8 +15,9 @@ async function createPost(req, res) {
         const uploadedImage = await uploadFile(file);
 
         const post = await postModel.create({
-            image: uploadedImage.url,
-            caption,
+        image: uploadedImage.url,
+        caption,
+        user: req.user.id,
         });
 
         res.status(201).json({
@@ -38,6 +39,7 @@ async function getAllPosts(req, res) {
 
         const posts = await postModel
             .find()
+            .populate("user", "username email")
             .sort({ createdAt: -1 });
 
         res.status(200).json({
