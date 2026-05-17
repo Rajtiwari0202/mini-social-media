@@ -32,7 +32,29 @@ async function createPost(req, res) {
         });
     }
 }
+async function getAllPosts(req, res) {
+
+    try {
+
+        const posts = await postModel
+            .find()
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({
+            posts,
+        });
+
+    } catch (error) {
+
+        console.log(error);
+
+        res.status(500).json({
+            message: "Internal Server Error",
+        });
+    }
+}
 
 module.exports = {
     createPost,
+    getAllPosts,
 };
