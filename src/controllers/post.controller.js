@@ -51,6 +51,13 @@ async function getAllPosts(req, res) {
 
     try {
 
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 5;
+
+        const skip = (page - 1) * limit;
+
+        const totalPosts = await postModel.countDocuments();
+
         const posts = await postModel
             .find()
             .populate("user", "username email")
@@ -61,10 +68,15 @@ async function getAllPosts(req, res) {
                     select: "username email",
                 },
             })
-            .sort({ createdAt: -1 });
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
 
         res.status(200).json({
             message: "Posts fetched successfully",
+            currentPage: page,
+            totalPages: Math.ceil(totalPosts / limit),
+            totalPosts,
             posts,
         });
 
@@ -77,7 +89,6 @@ async function getAllPosts(req, res) {
         });
     }
 }
-
 async function deletePost(req, res) {
 
     try {
