@@ -11,6 +11,7 @@ const {
     deletePost,
     toggleLike,
     getPostById,
+    editPost,
 } = require("../controllers/post.controller");
 
 // Get all posts
@@ -27,6 +28,7 @@ router.post(
 // Like / Unlike a post
 router.post("/:id/like", authMiddleware, toggleLike);
 
+router.put("/:id", authMiddleware, editPost);
 // Delete a post
 router.delete("/:id", authMiddleware, deletePost);
 

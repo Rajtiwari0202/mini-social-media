@@ -210,10 +210,56 @@ async function getPostById(req, res) {
         });
     }
 }
+async function editPost(req, res) {
+
+    try {
+
+        const { id } = req.params;
+        const { caption } = req.body;
+        if (!caption || caption.trim() === "") {
+            return res.status(400).json({
+            message: "Caption is required",
+        });
+}
+
+        const post = await postModel.findById(id);
+
+        if (!post) {
+            return res.status(404).json({
+                message: "Post not found",
+            });
+        }
+
+        if (post.user.toString() !== req.user.id) {
+            return res.status(403).json({
+                message: "You can edit only your own posts",
+            });
+        }
+
+        post.caption = caption || post.caption;
+
+        await post.save();
+
+        res.status(200).json({
+            message: "Post updated successfully",
+            post,
+        });
+
+    } catch (error) {
+
+        console.log(error);
+
+        res.status(500).json({
+            message: "Internal Server Error",
+        });
+    }
+}
+
 module.exports = {
     createPost,
     getAllPosts,
     deletePost,
     toggleLike,
     getPostById,
+    editPost,
 };
