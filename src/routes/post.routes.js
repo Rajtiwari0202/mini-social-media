@@ -10,11 +10,12 @@ const {
     getAllPosts,
     deletePost,
     toggleLike,
+    getPostById,
 } = require("../controllers/post.controller");
 
 // Get all posts
 router.get("/", getAllPosts);
-
+router.get("/:id", getPostById);
 // Create a post
 router.post(
     "/",

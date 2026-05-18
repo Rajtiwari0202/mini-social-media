@@ -174,10 +174,46 @@ async function toggleLike(req, res) {
         });
     }
 }
+async function getPostById(req, res) {
 
+    try {
+
+        const { id } = req.params;
+
+        const post = await postModel
+            .findById(id)
+            .populate("user", "username email")
+            .populate({
+                path: "comments",
+                populate: {
+                    path: "user",
+                    select: "username email",
+                },
+            });
+
+        if (!post) {
+            return res.status(404).json({
+                message: "Post not found",
+            });
+        }
+
+        res.status(200).json({
+            post,
+        });
+
+    } catch (error) {
+
+        console.log(error);
+
+        res.status(500).json({
+            message: "Internal Server Error",
+        });
+    }
+}
 module.exports = {
     createPost,
     getAllPosts,
     deletePost,
     toggleLike,
+    getPostById,
 };
