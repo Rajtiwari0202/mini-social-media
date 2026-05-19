@@ -1,21 +1,18 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import API from "../services/api";
 
 function Login() {
+
+    const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
         email: "",
         password: "",
     });
 
-    function handleChange(e) {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value,
-        });
-    }
-
     async function handleSubmit(e) {
+
         e.preventDefault();
 
         try {
@@ -25,14 +22,19 @@ function Login() {
                 formData
             );
 
-            console.log(response.data);
-
             localStorage.setItem(
                 "token",
                 response.data.token
             );
 
+            localStorage.setItem(
+                "user",
+                JSON.stringify(response.data.user)
+            );
+
             alert("Login successful");
+
+            navigate("/");
 
         } catch (error) {
 
@@ -46,59 +48,94 @@ function Login() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div
+            style={{
+                height: "100vh",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                background: "#f4f4f4",
+            }}
+        >
 
-            <form
-                onSubmit={handleSubmit}
-                className="bg-white p-8 rounded-2xl shadow-lg w-[400px]"
+            <div
+                style={{
+                    width: "350px",
+                    padding: "30px",
+                    background: "white",
+                    borderRadius: "10px",
+                    boxShadow: "0 0 10px rgba(0,0,0,0.1)",
+                }}
             >
 
-                <h1 className="text-3xl font-bold mb-6 text-center">
+                <h1
+                    style={{
+                        textAlign: "center",
+                        marginBottom: "20px",
+                    }}
+                >
                     Login
                 </h1>
 
-                <div className="mb-4">
-
-                    <label className="block mb-2 font-medium">
-                        Email
-                    </label>
+                <form onSubmit={handleSubmit}>
 
                     <input
                         type="email"
-                        name="email"
-                        placeholder="Enter email"
+                        placeholder="Email"
                         value={formData.email}
-                        onChange={handleChange}
-                        className="w-full border border-gray-300 p-3 rounded-lg outline-none"
+                        onChange={(e) =>
+                            setFormData({
+                                ...formData,
+                                email: e.target.value,
+                            })
+                        }
+                        style={{
+                            width: "100%",
+                            padding: "12px",
+                            marginBottom: "15px",
+                            borderRadius: "5px",
+                            border: "1px solid #ccc",
+                        }}
                     />
-
-                </div>
-
-                <div className="mb-6">
-
-                    <label className="block mb-2 font-medium">
-                        Password
-                    </label>
 
                     <input
                         type="password"
-                        name="password"
-                        placeholder="Enter password"
+                        placeholder="Password"
                         value={formData.password}
-                        onChange={handleChange}
-                        className="w-full border border-gray-300 p-3 rounded-lg outline-none"
+                        onChange={(e) =>
+                            setFormData({
+                                ...formData,
+                                password: e.target.value,
+                            })
+                        }
+                        style={{
+                            width: "100%",
+                            padding: "12px",
+                            marginBottom: "15px",
+                            borderRadius: "5px",
+                            border: "1px solid #ccc",
+                        }}
                     />
 
-                </div>
+                    <button
+                        type="submit"
+                        style={{
+                            width: "100%",
+                            padding: "12px",
+                            border: "none",
+                            borderRadius: "5px",
+                            background: "black",
+                            color: "white",
+                            cursor: "pointer",
+                            fontSize: "16px",
+                        }}
+                    >
+                        Login
+                    </button>
 
-                <button
-                    type="submit"
-                    className="w-full bg-black text-white py-3 rounded-lg hover:opacity-90 transition"
-                >
-                    Login
-                </button>
+                </form>
 
-            </form>
+            </div>
 
         </div>
     );
