@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken");
 const userModel = require("../models/user.model");
 
 async function registerUser(req, res) {
-
     try {
 
         const {
@@ -29,9 +28,15 @@ async function registerUser(req, res) {
             password: hashedPassword,
         });
 
+        const safeUser = {
+            _id: user._id,
+            username: user.username,
+            email: user.email,
+        };
+
         res.status(201).json({
             message: "User registered successfully",
-            user,
+            user: safeUser,
         });
 
     } catch (error) {
@@ -45,7 +50,6 @@ async function registerUser(req, res) {
 }
 
 async function loginUser(req, res) {
-
     try {
 
         const { email, password } = req.body;
@@ -79,10 +83,16 @@ async function loginUser(req, res) {
             }
         );
 
+        const safeUser = {
+            _id: user._id,
+            username: user.username,
+            email: user.email,
+        };
+
         res.status(200).json({
             message: "Login successful",
             token,
-            user,
+            user: safeUser,
         });
 
     } catch (error) {
