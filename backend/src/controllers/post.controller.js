@@ -1,11 +1,14 @@
 const postModel = require("../models/post.model");
+const commentModel = require("../models/comment.model");
 const uploadFile = require("../services/storage.service");
 
 async function createPost(req, res) {
 
     try {
+
         const file = req.file;
         const { caption } = req.body;
+
         if (!file) {
             return res.status(400).json({
                 message: "Image is required",
@@ -87,6 +90,7 @@ async function getAllPosts(req, res) {
         });
     }
 }
+
 async function deletePost(req, res) {
 
     try {
@@ -106,6 +110,10 @@ async function deletePost(req, res) {
                 message: "You can delete only your own posts",
             });
         }
+
+        await commentModel.deleteMany({
+            post: id,
+        });
 
         await postModel.findByIdAndDelete(id);
 
@@ -172,6 +180,7 @@ async function toggleLike(req, res) {
         });
     }
 }
+
 async function getPostById(req, res) {
 
     try {
@@ -201,24 +210,26 @@ async function getPostById(req, res) {
 
     } catch (error) {
 
-        console.log(error);
+        console.error(error);
 
         res.status(500).json({
             message: "Internal Server Error",
         });
     }
 }
+
 async function editPost(req, res) {
 
     try {
 
         const { id } = req.params;
         const { caption } = req.body;
+
         if (!caption || caption.trim() === "") {
             return res.status(400).json({
-            message: "Caption is required",
-        });
-}
+                message: "Caption is required",
+            });
+        }
 
         const post = await postModel.findById(id);
 
@@ -234,18 +245,22 @@ async function editPost(req, res) {
             });
         }
 
-        post.caption = caption || post.caption;
+        post.caption = caption.trim();
 
         await post.save();
 
+        const updatedPost = await postModel
+            .findById(post._id)
+            .populate("user", "username email");
+
         res.status(200).json({
             message: "Post updated successfully",
-            post,
+            post: updatedPost,
         });
 
     } catch (error) {
 
-        console.log(error);
+        console.error(error);
 
         res.status(500).json({
             message: "Internal Server Error",
