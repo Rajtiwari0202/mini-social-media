@@ -26,6 +26,22 @@ function Home() {
         }
     }
 
+    async function handleLike(postId) {
+
+        try {
+
+            await API.post(
+                `/posts/${postId}/like`
+            );
+
+            fetchPosts();
+
+        } catch (error) {
+
+            console.log(error);
+        }
+    }
+
     useEffect(() => {
 
         fetchPosts();
@@ -69,11 +85,11 @@ function Home() {
                                 key={post._id}
                                 style={{
                                     background: "white",
-                                    borderRadius: "10px",
-                                    marginBottom: "25px",
+                                    borderRadius: "15px",
+                                    marginBottom: "30px",
                                     overflow: "hidden",
                                     boxShadow:
-                                        "0 0 10px rgba(0,0,0,0.1)",
+                                        "0 4px 15px rgba(0,0,0,0.08)",
                                 }}
                             >
 
@@ -82,36 +98,124 @@ function Home() {
                                     alt="post"
                                     style={{
                                         width: "100%",
-                                        height: "400px",
+                                        height: "450px",
                                         objectFit: "cover",
                                     }}
                                 />
 
                                 <div
                                     style={{
-                                        padding: "15px",
+                                        padding: "20px",
                                     }}
                                 >
 
-                                    <h3
+                                    <div
                                         style={{
+                                            display: "flex",
+                                            justifyContent:
+                                                "space-between",
+                                            alignItems: "center",
                                             marginBottom: "10px",
                                         }}
                                     >
-                                        {post.user?.username}
-                                    </h3>
+
+                                        <h3>
+                                            @{post.user?.username}
+                                        </h3>
+
+                                        <small>
+                                            {
+                                                new Date(
+                                                    post.createdAt
+                                                ).toLocaleDateString()
+                                            }
+                                        </small>
+
+                                    </div>
 
                                     <p
                                         style={{
-                                            marginBottom: "10px",
+                                            marginBottom: "15px",
+                                            lineHeight: "1.5",
                                         }}
                                     >
                                         {post.caption}
                                     </p>
 
-                                    <p>
-                                        ❤️ {post.likes.length} likes
-                                    </p>
+                                    <button
+                                        onClick={() =>
+                                            handleLike(post._id)
+                                        }
+                                        style={{
+                                            border: "none",
+                                            background: "black",
+                                            color: "white",
+                                            padding: "10px 18px",
+                                            borderRadius: "8px",
+                                            cursor: "pointer",
+                                            marginBottom: "15px",
+                                        }}
+                                    >
+                                        ❤️ {post.likes.length} Likes
+                                    </button>
+
+                                    <div>
+
+                                        <h4
+                                            style={{
+                                                marginBottom: "10px",
+                                            }}
+                                        >
+                                            Comments
+                                        </h4>
+
+                                        {
+                                            post.comments.length === 0 ? (
+                                                <p>
+                                                    No comments yet
+                                                </p>
+                                            ) : (
+                                                post.comments.map(
+                                                    (comment) => (
+
+                                                        <div
+                                                            key={
+                                                                comment._id
+                                                            }
+                                                            style={{
+                                                                marginBottom:
+                                                                    "10px",
+                                                                padding:
+                                                                    "10px",
+                                                                background:
+                                                                    "#f4f4f4",
+                                                                borderRadius:
+                                                                    "8px",
+                                                            }}
+                                                        >
+
+                                                            <strong>
+                                                                @
+                                                                {
+                                                                    comment
+                                                                        .user
+                                                                        ?.username
+                                                                }
+                                                            </strong>
+
+                                                            <p>
+                                                                {
+                                                                    comment.text
+                                                                }
+                                                            </p>
+
+                                                        </div>
+                                                    )
+                                                )
+                                            )
+                                        }
+
+                                    </div>
 
                                 </div>
 
