@@ -4,10 +4,8 @@ const uploadFile = require("../services/storage.service");
 async function createPost(req, res) {
 
     try {
-
         const file = req.file;
         const { caption } = req.body;
-
         if (!file) {
             return res.status(400).json({
                 message: "Image is required",

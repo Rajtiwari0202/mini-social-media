@@ -8,8 +8,9 @@ const userRoutes = require("./routes/user.routes");
 
 const app = express();
 
-// Middleware
+// Middlewares
 app.use(cors());
+
 app.use(express.json());
 
 // Routes
@@ -18,7 +19,7 @@ app.use("/users", userRoutes);
 app.use("/posts", postRoutes);
 app.use("/comments", commentRoutes);
 
-// Health check route
+// Health route
 app.get("/", (req, res) => {
     res.json({
         message: "Mini Social Media API is running",
