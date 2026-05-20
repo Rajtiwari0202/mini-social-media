@@ -7,7 +7,7 @@ import {
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
-
+import CreatePost from "./pages/CreatePost";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 function App() {
@@ -35,6 +35,14 @@ function App() {
                         </ProtectedRoute>
                     }
                 />
+                <Route
+                    path="/create"
+            element={
+                <ProtectedRoute>
+                <CreatePost />
+            </ProtectedRoute>
+        }
+        />
 
             </Routes>
 
